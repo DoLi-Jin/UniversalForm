@@ -1,6 +1,6 @@
 <template>
   <div class="formBox" :class="{'noFixed':formDataObj.page && formDataObj.page.style && formDataObj.page.style.position && formDataObj.page.style.position == 'relative'}">
-    <div class="formBoxMain">
+    <div class="formBoxMain" :style="{height: formDataObj.page.style.height || formDataObj.page.style.height }">
       <el-scrollbar style="height: 100%;">
         
         <div class="formForm">
@@ -70,10 +70,10 @@
                   >
                   <el-radio
                     v-for="itm in item.radioArr"
-                    :key="itm[item.radioKey]"
-                    :label="itm[item.radioValue]"
+                    :key="itm[item.optionKey]"
+                    :label="itm[item.optionValue]"
                     :disabled="itm.disabled"
-                  >{{itm[item.radioLabel]}}</el-radio>
+                  >{{itm[item.optionLabel]}}</el-radio>
                 </el-radio-group>
                 <!-- 复选框 -->
                 <el-checkbox-group
@@ -82,11 +82,11 @@
                   v-if="item.type === 'checkbox'"
                   >
                   <el-checkbox v-for="(itm) in item.checkboxArr" 
-                    :label="itm[item.checkboxValue]" 
-                    :key="itm[item.checkboxKey]"
+                    :label="itm[item.optionValue]" 
+                    :key="itm[item.optionKey]"
                     :disabled="itm.disabled"
                   >
-                  {{itm[item.checkboxLabel]}}
+                  {{itm[item.optionLabel]}}
                   </el-checkbox>
                 </el-checkbox-group>
                 <!-- 上传框 -->
@@ -183,237 +183,11 @@
 <script>
 export default {
   name: 'formBox',
+  props:[ "formDataObj" ],
   data () {
     return {
       //用来储存上传的数据的name的属性
       fileName: "",
-      //表格数据对象
-      formDataObj: {
-        //包含的表格列表数据
-        list: {
-          // 标题
-          title1: {
-            type: "title",
-            name: "title1",
-            value: "这是一个标题",
-            noHidden: true,
-            style: { "font-size": "20px", "font-weight": "bold","text-align": "left", },
-            span: 24,
-          },
-          // 输入框
-          input1: {
-            type: "input",
-            name: "input1",
-            label: "这是输入框",
-            value: "输入框",
-            placeholder: "请输入",
-            disabled: false,
-            noHidden: true, //是否不隐藏，为false时候，隐藏并且会参与列表提交
-            propArr: [], //有此属性时候，说明此属性必须输入并且验证
-            span: 12, //有此属性则使用此属性，否则默认宽度为50%，占用的空间为 24/span
-          },
-          // 下拉框
-          select1: {
-            type: "select",
-            name: "select1",
-            label: "下拉框",
-            propArr: [
-              { required: true, message: "下拉框不能为空", trigger: "change" }
-            ],
-            disabled: false,
-            noHidden: true,
-            value: "1",
-            placeholder: "请选择下拉框",
-            multiple: false,
-            span: 12,
-            selectArr: [
-              {code: "1",name: "类型1"},
-              {code: "2",name: "类型2"},
-              {code: "3",name: "类型3"},
-            ],
-            optionKey: "code",
-            optionLabel: "name",
-            optionValue: "code"
-          },
-          // 日期选择框
-          date1: {
-            type: "date",
-            name: "date1",
-            label: "日期选择框",
-            value: "2018-12-06",
-            placeholder: "请输入",
-            disabled: false,
-            noHidden: true, //是否不隐藏，为false时候，隐藏并且会参与列表提交
-            propArr: [
-              { required: true, message: "下拉框不能为空", trigger: "change" }
-            ], //有此属性时候，说明此属性必须输入并且验证
-            span: 12, //有此属性则使用此属性，否则默认宽度为50%，占用的空间为 24/span
-          },
-          // 单选框
-          radio1: {
-            type: "radio",
-            name: "radio1",
-            label: "今日菜单",
-            propArr: [
-              { required: true, message: "没什么选择就 哈士奇？", trigger: "change" }
-            ],
-            disabled: false,
-            noHidden: true,
-            value: "",
-            placeholder: "请选择单选框",
-            span: 12,
-            radioArr: [
-              { id: "1", name: "大米", disabled: false },
-              { id: "2", name: "小米", disabled: false },
-              { id: "3", name: "苹果", disabled: false },
-              { id: "4", name: "葡萄", disabled: false },
-              { id: "5", name: "捷豹", disabled: false },
-              { id: "6", name: "哈士奇", disabled: false },
-            ],
-            radioLabel: "name",
-            radioValue: "id",
-            radioKey: "id",
-          },
-          // 复选框
-          checkbox1: {
-            type: "checkbox",
-            name: "checkbox1",
-            label: "昨天吃了什么",
-            propArr: [
-              { required: true, message: "昨天一定吃饭了", trigger: "blur" }
-            ],
-            disabled: false,
-            noHidden: true,
-            value: ["4"],
-            placeholder: "选择食物",
-            span: 12,
-            checkboxArr: [
-              { code:"1", name: "榴莲" },
-              { code:"2", name: "臭豆腐" },
-              { code:"3", name: "螺蛳粉" },
-              { code:"4", name: "哈士奇" },
-            ],
-            checkboxLabel: "name",
-            checkboxValue: "code",
-            checkboxKey: "code",
-          },
-          // 上传框
-          contractUrl: {
-            type: "upload",
-            name: "contractUrl",
-            accept: 'image/jpeg,image/gif,image/png,image/bmp',
-            label: "合同模板",
-            propArr: [
-              { required: true, message: "合同模板不能为空", trigger: ("blur",'change') },
-            ],
-            label1: "上传",
-            disabled: false,
-            noHidden: true,
-            value: "",
-            multiple: false,
-            placeholder: "请上传您的合同模板",
-            span: 12,
-            fileList: [],
-            limit: 1,
-          },
-          // 文本框
-          textarea1: {
-            type: "textarea",
-            name: "textarea1",
-            label: "哈士奇烹饪描述",
-            propArr: [
-              { required: true, message: '要不试试磕碰捷豹？', trigger: 'blur' },
-            ],
-            disabled: false,
-            noHidden: true,
-            value: "",
-            placeholder: "模板说明为200字符，超过自动截取考前部分",
-            span: 24,
-            maxlength: 200,
-          },
-          // 树状图
-          tree1: {
-            type: "tree",
-            name: "tree1",
-            label: "辛特勒的名单",
-            // propArr: [
-            //   { required: true, message: "权限名称不能为空", trigger: "blur" },
-            // ],
-            disabled: false,
-            noHidden: true,
-            value: [],
-            placeholder: "请选择权限名称",
-            span: 24,
-            props: {
-              children: 'subMenus',
-              label: 'name'
-            },
-            treeArr: [
-              {
-                id:1, name: "烹饪大全", subMenus: [
-                  { id: 10, name: "哈士奇", },
-                  { id: 11, name: "二哈", },
-                ]
-              },
-              {
-                id:2, name: "磕碰大全", subMenus: [
-                  { id: 10, name: "天猫", },
-                  { id: 11, name: "捷豹", },
-                ]
-              }
-            ],
-            treeLabel: "name",
-            treeValue: "id",
-            treeKey: "id"
-          },
-
-        },
-        //页面属性，form中label的宽度
-        page: {
-          formLabel: {
-            label: "测试表格",
-            width: "120px",
-          },
-          style:{
-            "position":"relative"
-          }
-        },
-        // 按钮列表
-        button: {
-          toSubmit: {
-            type: "button",
-            name: "submit",
-            label: "提交",
-            noHidden: true,
-            value: "提交",
-            span: 4,
-            offset: 6,
-            style:{
-              "background": "#ddd",
-              width: "200px",
-            },
-          },
-          toCancel: {
-            type: "button",
-            name: "cancel",
-            label: "返回",
-            noHidden: true,
-            value: "返回",
-            span: 4,
-            offset: 2,
-            style:{
-              "background": "#ddd",
-            },
-          },
-          toClose: {
-            type: "button",
-            name: "close",
-            label: "返回",
-            noHidden: true,
-            value: "返回",
-          },
-        },
-      }
     }
   },
   methods: {
@@ -426,8 +200,9 @@ export default {
       PostFilesAnon(formData)
       .then((response)=>{
         if(response.data.resp_code == 200){
-          this.formDataObj.list[this.fileName].fileList = [response.data.data]
-          this.formDataObj.list[this.fileName].value = response.data.data.url || ''
+          this.$emit('uploadRequest',this.fileName,response.data.data)
+          // this.formDataObj.list[this.fileName].fileList = [response.data.data]
+          // this.formDataObj.list[this.fileName].value = response.data.data.url || ''
         }else{
           this.$message.error('图片修改失败，请联系管理员'); 
         }
@@ -465,7 +240,7 @@ export default {
   position: fixed; justify-content: center; align-items: center; display: flex; z-index: 101; top: 0; left: 0;
    background: rgba(256, 256, 256, 0.5); }
   .noFixed{ position: relative;  }
-  .formBoxMain{ width: 80%; height: 80%; box-sizing: border-box; 
+  .formBoxMain{ width: 80%; height: 80%; box-sizing: border-box; background: #fff;
   border-radius: 10px; border: 1px solid #ddd; box-shadow: 0 2px 6px 0 rgba(0,0,0,.1) }
   .noFixed .formBoxMain{ width: 100%; height: 100%; border-radius: 0; border: 0; box-shadow: none; }
   .formForm{ min-height: 200px; }
